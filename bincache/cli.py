@@ -27,11 +27,11 @@ def get_dynamic_libs(binary):
             parts = line.split('=>')
             if len(parts) > 1:
                 lib_path = parts[1].split('(')[0].strip()
-                if lib_path and os.path.exists(lib_path):
+                if lib_path:
                     libs.append(lib_path)
         else:
             lib_path = line.split()[0].strip()
-            if lib_path and os.path.exists(lib_path):
+            if lib_path:
                 libs.append(lib_path)
     
     return libs
@@ -72,7 +72,7 @@ def main():
     
     cached_output = get_cached_output(cache_key)
     if cached_output is not None:
-        sys.stdout.write(stdout)
+        sys.stdout.write(cached_output)
         return
     result = subprocess.Popen([binary] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = result.communicate()

@@ -85,12 +85,12 @@ def mock_sys_argv():
 def test_main_with_cache(mock_generate_hash, mock_get_cached_output, mock_popen, mock_cache_output, mock_sys_argv):
     mock_generate_hash.return_value = "dummy_cache_key"
     mock_get_cached_output.return_value = "cached_output"
-    with patch('builtins.print') as mock_print:
+    with patch('sys.stdout.write') as mock_print:
         cli.main()
         mock_print.assert_any_call("cached_output")
         mock_popen.assert_not_called()
 
-def xtest_main_without_cache(mock_generate_hash, mock_get_cached_output, mock_popen, mock_cache_output, mock_sys_argv):
+def test_main_without_cache(mock_generate_hash, mock_get_cached_output, mock_popen, mock_cache_output, mock_sys_argv):
     mock_generate_hash.return_value = "dummy_cache_key"
     mock_get_cached_output.return_value = None
     
@@ -99,7 +99,7 @@ def xtest_main_without_cache(mock_generate_hash, mock_get_cached_output, mock_po
     mock_process.communicate.return_value = (b"program output", b"")
     mock_process.returncode = 0
 
-    with patch('builtins.print') as mock_print:
+    with patch('sys.stdout.write') as mock_print:
         cli.main()
         mock_print.assert_any_call("program output")
         mock_cache_output.assert_called_once_with("dummy_cache_key", "program output")
