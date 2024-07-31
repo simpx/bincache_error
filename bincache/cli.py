@@ -23,13 +23,16 @@ def get_dynamic_libs(binary):
     
     libs = []
     for line in stdout.decode('utf-8').splitlines():
-        parts = line.split()
-        if "=>" in parts:
-            lib_path = parts[parts.index("=>") + 1]
-            libs.append(lib_path)
-        elif parts[0].startswith('/'):
-            lib_path = parts[0]
-            libs.append(lib_path)
+        if '=>' in line:
+            parts = line.split('=>')
+            if len(parts) > 1:
+                lib_path = parts[1].split('(')[0].strip()
+                if lib_path and os.path.exists(lib_path):
+                    libs.append(lib_path)
+        else:
+            lib_path = line.split()[0].strip()
+            if lib_path and os.path.exists(lib_path):
+                libs.append(lib_path)
     
     return libs
 
@@ -56,7 +59,7 @@ def get_cached_output(cache_key):
     cache_file = os.path.join(cache_dir, cache_key)
     if os.path.exists(cache_file):
         with io.open(cache_file, 'rb') as f:
-            return pickle.load(f)
+            return pickle.load(f)  # 反序列化二进制数据
     return None
 
 def main():
@@ -69,7 +72,7 @@ def main():
     
     cached_output = get_cached_output(cache_key)
     if cached_output is not None:
-        print(cached_output)
+        sys.stdout.write(stdout)
         return
     result = subprocess.Popen([binary] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = result.communicate()
