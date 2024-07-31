@@ -29,12 +29,10 @@ def get_dynamic_libs(binary):
         parts = line.split()
         if "=>" in parts:
             lib_path = parts[parts.index("=>") + 1]
-            if os.path.exists(lib_path):
-                libs.append(lib_path)
+            libs.append(lib_path)
         elif parts[0].startswith('/'):
             lib_path = parts[0]
-            if os.path.exists(lib_path):
-                libs.append(lib_path)
+            libs.append(lib_path)
     
     return libs
 
